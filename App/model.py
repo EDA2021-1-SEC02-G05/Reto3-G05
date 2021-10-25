@@ -50,66 +50,89 @@ def newAnalyzer():
     Retorna el analizador inicializado.
     """
     analyzer = {'ufos_list': None,
-                'Sightings_city': None
+                'Sightings_citylab':None,
+                'Sightings_per_city': None
                 }
 
     analyzer['ufos_list'] = lt.newList('ARRAY_LIST')
-    analyzer['Sightings_per_city'] = om.newMap(omaptype='RBT',
-                                      comparefunction=compareCity)
+    analyzer['Sightings_citylab'] = om.newMap('RTB',
+                                             comparefunction = compareCity)
+    analyzer['Sightings_per_city'] = mp.newMap(numelements = 100,
+                                                maptype='PROBBING',
+                                                loadfactor=0.5,
+                                                comparefunction=compareCity)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
 def addAvistamiento(analyzer, avistamiento):
 
     lt.addLast(analyzer['ufos_list'], avistamiento)
-    updateCityIndex(analyzer['Sightings_per_city'], avistamiento)
+    updateCityIndexlab(analyzer['Sightings_citylab'], avistamiento)
+    #updateCityIndex(analyzer['Sightings_per_city'], avistamiento)
     return analyzer
-
-def updateCityIndex(map, avistamiento):
+def updateCityIndexlab(map,avistamiento):
     city = avistamiento['city']
     
     entry = om.get(map, city)
     if entry is None:
-        cityentry = newCityEntry(avistamiento)
+        cityentry = newCityEntrylab(city, avistamiento)
         om.put(map, city, cityentry)
     else:
         cityentry = me.getValue(entry)
-    addCityIndex(cityentry, avistamiento)
+    addDateIndex(cityentry, avistamiento)
     return map
 
-def addCityIndex(cityentry, avistamiento):
+
+    pass
+def updateCityIndex(map, avistamiento):
+    city = avistamiento['city']
+    
+    entry = mp.get(map, city)
+    if entry is None:
+        cityentry = newCityEntry(city, avistamiento)
+        mp.put(map, city, cityentry)
+    else:
+        cityentry = me.getValue(entry)
+    addDateIndex(cityentry, avistamiento)
+    return map
+
+def addDateIndex(cityentry, avistamiento):
     """
     Actualiza un indice de tipo de crimenes.  Este indice tiene una lista
     de crimenes y una tabla de hash cuya llave es el tipo de crimen y
     el valor es una lista con los crimenes de dicho tipo en la fecha que
     se está consultando (dada por el nodo del arbol)
     """
-    lst = cityentry['lstSights']
-    lt.addLast(lst, avistamiento)
-    """
-    cityIndex = cityentry['CityIndex']
-    cityentry = mp.get(cityIndex, avistamiento['city'])
-    if (cityentry is None):
-        entry = newCityEntry(avistamiento['city'], avistamiento)
-        lt.addLast(entry['lstSights'], avistamiento)
-        mp.put(offenseIndex, avistamiento['OFFENSE_CODE_GROUP'], entry)
-    else:
-        entry = me.getValue(offentry)
-        lt.addLast(entry['lstoffenses'], avistamiento)
-    return cityentry
-    """
+    date = datetime.datetime.strptime(avistamiento['datetime'], '%Y-%m-%d %H:%M:%S')
+    print(date)
+    date_omap = cityentry['DateSightsIndex']
+
+    entry = om.get(date_omap, date)
+
+    if entry is None:
+        datentry = newDateEntry()
+
+        pass
+    
+    
 # Funciones para creacion de datos
 
-def newCityEntry(avistamiento):
+def newCityEntrylab(city, avistamiento):
+    entry = {'City': city, 'Sightslst': None}
+
+    entry['Sightslst'] = lt.newList('ARRAT_LIST', cmpfunction = cmpdates)
+
+    return entry
+
+
+def newCityEntry(city, avistamiento):
     """
     Crea una entrada en el indice por fechas, es decir en el arbol
     binario.
     """
-    entry = {'CityIndex': None, 'lstSights': None}
-    entry['CityIndex'] = mp.newMap(numelements=30,
-                                     maptype='PROBING',
-                                     comparefunction=compareOffenses)
-    entry['lstSights'] = lt.newList('SINGLE_LINKED', compareCities)
+    entry = {'City': city, 'DateSightsIndex': None}
+    entry['DateSightsIndex'] = om.newMap('RTB',
+                                         comparefunction = omapcmpDate)
     return entry
     
 
@@ -119,8 +142,6 @@ def SightSize(analyzer):
     Numero de avistamientos leidos
     """
     return lt.size(analyzer['ufos_list'])
-
-
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
@@ -134,6 +155,9 @@ def compareCity(city1, city2):
         return 1
     else:
         return -1
+
+def omapcmpDate (date1,date2):
+    pass
 
 
 # Funciones de ordenamiento

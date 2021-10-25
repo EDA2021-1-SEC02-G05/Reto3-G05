@@ -54,7 +54,7 @@ def loadData(analyzer):
 
 def SightSize(analyzer):
     """
-    Numero de avistamientos leidos
+    Numero de  leidos
     """
     return model.SightSize(analyzer)
 

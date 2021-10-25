@@ -70,6 +70,7 @@ def addAvistamiento(analyzer, avistamiento):
     updateCityIndexlab(analyzer['Sightings_citylab'], avistamiento)
     #updateCityIndex(analyzer['Sightings_per_city'], avistamiento)
     return analyzer
+
 def updateCityIndexlab(map,avistamiento):
     city = avistamiento['city']
     
@@ -77,13 +78,14 @@ def updateCityIndexlab(map,avistamiento):
     if entry is None:
         cityentry = newCityEntrylab(city, avistamiento)
         om.put(map, city, cityentry)
+
     else:
         cityentry = me.getValue(entry)
-    addDateIndex(cityentry, avistamiento)
+    
+    lt.addLast(cityentry['Sightslst'],avistamiento)
+
     return map
 
-
-    pass
 def updateCityIndex(map, avistamiento):
     city = avistamiento['city']
     
@@ -91,8 +93,10 @@ def updateCityIndex(map, avistamiento):
     if entry is None:
         cityentry = newCityEntry(city, avistamiento)
         mp.put(map, city, cityentry)
+
     else:
         cityentry = me.getValue(entry)
+
     addDateIndex(cityentry, avistamiento)
     return map
 
@@ -120,7 +124,7 @@ def addDateIndex(cityentry, avistamiento):
 def newCityEntrylab(city, avistamiento):
     entry = {'City': city, 'Sightslst': None}
 
-    entry['Sightslst'] = lt.newList('ARRAT_LIST', cmpfunction = cmpdates)
+    entry['Sightslst'] = lt.newList('ARRAT_LIST', cmpfunction = cmpdateslab)
 
     return entry
 
@@ -135,6 +139,8 @@ def newCityEntry(city, avistamiento):
                                          comparefunction = omapcmpDate)
     return entry
     
+def newDateEntry():
+    pass
 
 # Funciones de consulta
 def SightSize(analyzer):
@@ -149,13 +155,26 @@ def compareCity(city1, city2):
     """
     Compara dos ciudades 
     """
-    if (city1 == city1):
+    if (city1 == city2):
         return 0
-    elif (city1 > city1):
+    elif (city1 > city2):
+        return 1
+    else:
+        return -1
+def cmpdateslab (date1,date2):
+    
+    """
+    Compara dos fechas
+    """
+    
+    if (date1 == date2):
+        return 0
+    elif (date1 > date2):
         return 1
     else:
         return -1
 
+    
 def omapcmpDate (date1,date2):
     pass
 

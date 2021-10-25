@@ -24,6 +24,7 @@ import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
+from DISClib.ADT import orderedmap as om
 assert cf
 
 
@@ -37,8 +38,9 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Inicializar el catálogo")
-    print("2- ")
-    print('3- Contar los avistamientos en una ciudad')
+    print("2- Cargar datos al catálogo")
+    print('3- Altura y elementos del arbol (lab 8)')
+    #print('3- Contar los avistamientos en una ciudad')
     print('4- Contar los avistamientos por duración')
     print('5- Contar avistamientos por Hora/Minutos del día')
     print('6- Contar los avistamientos en un rango de fechas')
@@ -79,6 +81,12 @@ while True:
         for sighting in lt.iterator(last5):
             print(sighting)
 
+    elif int(inputs[0]) == 3:
+        elements = om.size(analyzer['Sightings_citylab'])
+        height = om.height(analyzer['Sightings_citylab'])
+        #print(analyzer['Sightings_citylab'])
+        print('Número de elementos en el arbol: ' + str(elements))
+        print('Altura del arbol: ' + str(height))
 
     else:
         sys.exit(0)

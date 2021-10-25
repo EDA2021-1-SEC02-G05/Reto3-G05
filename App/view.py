@@ -36,8 +36,15 @@ operación solicitada
 
 def printMenu():
     print("Bienvenido")
-    print("1- Cargar información en el catálogo")
+    print("1- Inicializar el catálogo")
     print("2- ")
+    print('3- Contar los avistamientos en una ciudad')
+    print('4- Contar los avistamientos por duración')
+    print('5- Contar avistamientos por Hora/Minutos del día')
+    print('6- Contar los avistamientos en un rango de fechas')
+    print('7- Contar los avistamientos de una Zona Geográfica')
+
+
 
 catalog = None
 
@@ -48,10 +55,30 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        print("Cargando información de los archivos ....")
+        print("\nInicializando....")
+        
+        analyzer = controller.init()
 
     elif int(inputs[0]) == 2:
-        pass
+        print("Cargando información de los archivos ....")
+        controller.loadData(analyzer)
+
+        size = lt.size(analyzer['ufos_list'])
+
+        print('El total de avistamiento cargados es de: '+ str(size))
+        print('\nLos primeros y últimos 5 avistamientos con su información correspondiente son: ')
+
+        first5 = lt.subList(analyzer['ufos_list'],1,5)
+        last5 = lt.subList(analyzer['ufos_list'], size - 4 ,5)
+
+        for sighting in lt.iterator(first5):
+            print(sighting)
+
+        print('\n-------------------------------------------------------\n')
+
+        for sighting in lt.iterator(last5):
+            print(sighting)
+
 
     else:
         sys.exit(0)

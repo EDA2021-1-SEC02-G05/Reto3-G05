@@ -52,12 +52,10 @@ def loadData(analyzer):
         model.addAvistamiento(analyzer, avistamiento)
     return analyzer
 
-def SightSize(analyzer):
-    """
-    Numero de  leidos
-    """
-    return model.SightSize(analyzer)
 
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+def getCitySights (analyzer, city):
+
+    return model.getCitySights(analyzer, city)

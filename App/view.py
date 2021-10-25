@@ -25,6 +25,8 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 from DISClib.ADT import orderedmap as om
+from DISClib.DataStructures import mapentry as me
+from DISClib.ADT import map as mp
 assert cf
 
 
@@ -90,6 +92,16 @@ while True:
         print('Número de elementos en el arbol: ' + str(elements))
         print('Altura del arbol: ' + str(height))
         """
+        city = (input('Nombre de la ciudad a consultar: ')).lower()
+        size = mp.size(analyzer['Sightings_per_city'])
+
+        avistamientos = controller.getCitySights(analyzer,city)
+        print(avistamientos)
+
+        print('El total de ciudades donde se han reportado avistamientos es de: ' + str(size))
+
+
+
 
     else:
         sys.exit(0)

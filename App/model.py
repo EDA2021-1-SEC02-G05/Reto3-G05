@@ -30,7 +30,7 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import mapentry as me
-from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import mergesort as ms
 import datetime
 assert cf
 
@@ -88,7 +88,7 @@ def updateCityIndex(map, avistamiento):
     
     entry = mp.get(map, city)
     if entry is None:
-        cityentry = newCityEntry(city, avistamiento)
+        cityentry = newCityEntry(city)
         mp.put(map, city, cityentry)
 
     else:
@@ -105,16 +105,20 @@ def addDateIndex(cityentry, avistamiento):
     se está consultando (dada por el nodo del arbol)
     """
     date = datetime.datetime.strptime(avistamiento['datetime'], '%Y-%m-%d %H:%M:%S')
-    print(date)
-    date_omap = cityentry['DateSightsIndex']
+    #print(date)
+    date_index = cityentry['DateSightsIndex']
 
-    entry = om.get(date_omap, date)
+    entry = om.get(date_index, date.date())
 
     if entry is None:
-        datentry = newDateEntry()
+        datentry = newDateEntry(date.date())
+        lt.addLast(datentry['Sightslst'],avistamiento)
+        om.put(date_index,date.date(),datentry)
+    else:
+        datentry = me.getValue(entry)
+        lt.addLast(datentry['Sightslst'], avistamiento)
 
-        pass
-    
+    return cityentry
     
 # Funciones para creacion de datos
 
@@ -126,7 +130,7 @@ def newCityEntrylab(city, avistamiento):
     return entry
 
 
-def newCityEntry(city, avistamiento):
+def newCityEntry(city):
     """
     Crea una entrada en el indice por fechas, es decir en el arbol
     binario.
@@ -136,28 +140,46 @@ def newCityEntry(city, avistamiento):
                                          comparefunction = omapcmpDate)
     return entry
     
-def newDateEntry():
-    pass
+def newDateEntry(date):
+    entry = {'Date': date, 'Sightslst': None}
+
+    entry['Sightslst'] = lt.newList('ARRAY_LIST', cmpfunction = cmphour)
+
+    return entry
 
 # Funciones de consulta
-def SightSize(analyzer):
-    """
-    Numero de avistamientos leidos
-    """
-    return lt.size(analyzer['ufos_list'])
+
+def getCitySights (analyzer, city):
+    avistamientoslst = lt.newList('ARRAY_LIST', cmpfunction = cmphour)
+
+    cityentry = mp.get(analyzer['Sightings_per_city'],city)
+    city_dateindex = me.getValue(cityentry) 
+    city_date_keys = om.keySet(city_dateindex['DateSightsIndex'])
+
+    for date in lt.iterator(city_date_keys):
+        datetry = om.get(city_dateindex['DateSightsIndex'], date)
+        date_value = me.getValue(datetry)
+        sortHour(date_value)
+        for avistamiento in lt.iterator(date_value):
+            lt.addLast(avistamientoslst,avistamiento)
+
+    return avistamientoslst
+
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
-def compareCity(city1, city2):
+def compareCity(city1, entry):
     """
     Compara dos ciudades 
     """
-    if (city1 == city2):
+    city2entry = me.getKey(entry)
+    if (city1 == city2entry):
         return 0
-    elif (city1 > city2):
+    elif (city1 > city2entry):
         return 1
     else:
         return -1
+    
 def cmpdateslab (date1,date2):
     
     """
@@ -171,9 +193,28 @@ def cmpdateslab (date1,date2):
     else:
         return -1
 
-    
+def cmphour (hour1,hour2):
+
+    date1 = datetime.datetime.strptime(hour1['datetime'], '%Y-%m-%d %H:%M:%S')
+    date2 = datetime.datetime.strptime(hour2['datetime'], '%Y-%m-%d %H:%M:%S')
+
+    hour1_num = date1.time()
+    hour2_num = date2.time()
+
+    return hour1_num < hour2_num
+
 def omapcmpDate (date1,date2):
-    pass
+    if (date1 == date2):
+        return 0
+    elif (date1 > date2):
+        return 1
+    else:
+        return -1
+
 
 
 # Funciones de ordenamiento
+
+def sortHour(avistamientoslst):
+
+    ms.sort(avistamientoslst, cmphour)

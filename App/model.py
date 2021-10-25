@@ -55,8 +55,8 @@ def newAnalyzer():
                 }
 
     analyzer['ufos_list'] = lt.newList('ARRAY_LIST')
-    analyzer['Sightings_citylab'] = om.newMap('RTB',
-                                             comparefunction = compareCity)
+    #analyzer['Sightings_citylab'] = om.newMap('RTB',
+    #                                         comparefunction = compareCity)
     analyzer['Sightings_per_city'] = mp.newMap(numelements = 100,
                                                 maptype='PROBBING',
                                                 loadfactor=0.5,
@@ -67,8 +67,8 @@ def newAnalyzer():
 def addAvistamiento(analyzer, avistamiento):
 
     lt.addLast(analyzer['ufos_list'], avistamiento)
-    updateCityIndexlab(analyzer['Sightings_citylab'], avistamiento)
-    #updateCityIndex(analyzer['Sightings_per_city'], avistamiento)
+    #updateCityIndexlab(analyzer['Sightings_citylab'], avistamiento)
+    updateCityIndex(analyzer['Sightings_per_city'], avistamiento)
     return analyzer
 
 def updateCityIndexlab(map,avistamiento):
@@ -78,12 +78,9 @@ def updateCityIndexlab(map,avistamiento):
     if entry is None:
         cityentry = newCityEntrylab(city, avistamiento)
         om.put(map, city, cityentry)
-
     else:
-        cityentry = me.getValue(entry)
-    
+        cityentry = me.getValue(entry) 
     lt.addLast(cityentry['Sightslst'],avistamiento)
-
     return map
 
 def updateCityIndex(map, avistamiento):

@@ -42,11 +42,11 @@ def printMenu():
     print("1- Inicializar el catálogo")
     print("2- Cargar datos al catálogo")
     #print('3- Altura y elementos del arbol (lab 8)')
-    print('3- Contar los avistamientos en una ciudad')
-    print('4- Contar los avistamientos por duración')
-    print('5- Contar avistamientos por Hora/Minutos del día')
-    print('6- Contar los avistamientos en un rango de fechas')
-    print('7- Contar los avistamientos de una Zona Geográfica')
+    print('3- Contar los avistamientos en una ciudad (Req-1)')
+    print('4- Contar los avistamientos por duración (Req-2)')
+    print('5- Contar avistamientos por Hora/Minutos del día (Req-3)')
+    print('6- Contar los avistamientos en un rango de fechas (Req-4)')
+    print('7- Contar los avistamientos de una Zona Geográfica (Req-5)')
 
 
 

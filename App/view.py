@@ -51,6 +51,27 @@ def printMenu():
 
 
 catalog = None
+def printReq1(analyzer, avistamientos, city):
+    size_total = mp.size(analyzer['Sightings_per_city'])
+    size_city = lt.size(avistamientos)
+    print('El total de ciudades donde se han reportado avistamientos es de: ' + str(size_total)+'\n')
+    print('En la ciudad ' + city + ' se reportaron en total '+ str(size_city)+ ' avistamientos.\n')
+    print('Los primeros 3 y últimos 3 avistamientos en la ciudad son: \n')
+
+    if size_city > 6:
+
+        first3 = lt.subList(avistamientos,1,3)
+        last3 = lt.subList(avistamientos,size_city - 2,3)
+
+        for avis in lt.iterator(first3):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
+        
+        for avis in lt.iterator(last3):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
+    else:
+        for avis in lt.iterator(avistamientos):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
+
 
 """
 Menu principal
@@ -93,12 +114,13 @@ while True:
         print('Altura del arbol: ' + str(height))
         """
         city = (input('Nombre de la ciudad a consultar: ')).lower()
-        size = mp.size(analyzer['Sightings_per_city'])
 
         avistamientos = controller.getCitySights(analyzer,city)
-        print(avistamientos)
 
-        print('El total de ciudades donde se han reportado avistamientos es de: ' + str(size))
+        printReq1(analyzer, avistamientos, city)
+        
+
+        
 
 
 

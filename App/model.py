@@ -108,17 +108,21 @@ def addDateIndex(cityentry, avistamiento):
     #print(date)
     date_index = cityentry['DateSightsIndex']
 
-    entry = om.get(date_index, date.date())
+    entry = om.get(date_index, date)
 
     if entry is None:
-        datentry = newDateEntry(date.date())
+        datentry = newDateEntry(date)
         lt.addLast(datentry['Sightslst'],avistamiento)
-        om.put(date_index,date.date(),datentry)
+        om.put(date_index,date,datentry)
     else:
         datentry = me.getValue(entry)
         lt.addLast(datentry['Sightslst'], avistamiento)
 
     return cityentry
+
+def sortCity(analyzer):
+
+    pass
     
 # Funciones para creacion de datos
 
@@ -159,8 +163,8 @@ def getCitySights (analyzer, city):
     for date in lt.iterator(city_date_keys):
         datetry = om.get(city_dateindex['DateSightsIndex'], date)
         date_value = me.getValue(datetry)
-        sortHour(date_value)
-        for avistamiento in lt.iterator(date_value):
+
+        for avistamiento in lt.iterator(date_value['Sightslst']):
             lt.addLast(avistamientoslst,avistamiento)
 
     return avistamientoslst
@@ -215,6 +219,3 @@ def omapcmpDate (date1,date2):
 
 # Funciones de ordenamiento
 
-def sortHour(avistamientoslst):
-
-    ms.sort(avistamientoslst, cmphour)

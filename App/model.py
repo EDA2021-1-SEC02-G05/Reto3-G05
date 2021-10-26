@@ -51,7 +51,8 @@ def newAnalyzer():
     """
     analyzer = {'ufos_list': None,
                 'Sightings_citylab':None,
-                'Sightings_per_city': None
+                'Sightings_per_city': None,
+                'Sightings_per_duration':None,
                 }
 
     analyzer['ufos_list'] = lt.newList('ARRAY_LIST')
@@ -61,6 +62,8 @@ def newAnalyzer():
                                                 maptype='PROBBING',
                                                 loadfactor=0.5,
                                                 comparefunction=compareCity)
+    analyzer['Sightings_per_duration'] = om.newMap('RBT',
+                                                   comparefunction = compareduration)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -69,6 +72,7 @@ def addAvistamiento(analyzer, avistamiento):
     lt.addLast(analyzer['ufos_list'], avistamiento)
     #updateCityIndexlab(analyzer['Sightings_citylab'], avistamiento)
     updateCityIndex(analyzer['Sightings_per_city'], avistamiento)
+    updateDurationIndex(analyzer['Sightings_per_duration'], avistamiento)
     return analyzer
 
 def updateCityIndexlab(map,avistamiento):
@@ -105,7 +109,7 @@ def addDateIndex(cityentry, avistamiento):
     se está consultando (dada por el nodo del arbol)
     """
     date = datetime.datetime.strptime(avistamiento['datetime'], '%Y-%m-%d %H:%M:%S')
-    #print(date)
+  
     date_index = cityentry['DateSightsIndex']
 
     entry = om.get(date_index, date)
@@ -120,9 +124,30 @@ def addDateIndex(cityentry, avistamiento):
 
     return cityentry
 
-def sortCity(analyzer):
+def updateDurationIndex(map, avistamiento):
+    duration = avistamiento['duration (seconds)'].split('.')
 
-    pass
+    entry = om.get(map, int(duration[0]))
+
+    if entry is None:
+        durationentry = newDurationEntrylab(int(duration[0]))
+        om.put(map, int(duration[0]), durationentry)
+    else:
+        durationentry = me.getValue(entry) 
+    lt.addLast(durationentry['Sightslst'],avistamiento)
+    return map
+
+def sortDurationIndex(analyzer):
+
+    duration_omap = analyzer['Sightings_per_duration']
+
+    duration_keys = om.keySet(duration_omap)
+
+    for key in lt.iterator(duration_keys):
+        duration_entry = om.get(duration_omap, key)
+        sights_list = me.getValue(duration_entry)
+        sortduration(sights_list['Sightslst'])
+
     
 # Funciones para creacion de datos
 
@@ -151,6 +176,12 @@ def newDateEntry(date):
 
     return entry
 
+def newDurationEntrylab(duration):
+    entry = {'Duration': duration, 'Sightslst':None}
+
+    entry['Sightslst'] = lt.newList('ARRAY_LIST')
+
+    return entry
 # Funciones de consulta
 
 def getCitySights (analyzer, city):
@@ -169,6 +200,23 @@ def getCitySights (analyzer, city):
 
     return avistamientoslst
 
+def getDurationSights(analyzer,lim_inf, lim_sup):
+
+    durationlst = lt.newList('ARRAY_LIST')
+
+    duration_omap = analyzer['Sightings_per_duration']
+    duration_max = om.maxKey(duration_omap)
+    duration_max_entry = om.get(duration_omap,duration_max )
+    duration_max_value = me.getValue(duration_max_entry)
+    duration_max_size = lt.size(duration_max_value['Sightslst'])
+    duration_rangevalues = om.values(duration_omap, lim_inf, lim_sup) 
+
+    for value in lt.iterator(duration_rangevalues):
+        for avis in lt.iterator(value['Sightslst']):
+            lt.addLast(durationlst,avis)
+
+
+    return durationlst, duration_max, duration_max_size
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
@@ -183,7 +231,16 @@ def compareCity(city1, entry):
         return 1
     else:
         return -1
+
+def compareduration(duration1,duration2):
+    if (duration1 == duration2):
+        return 0
+    elif (duration1 > duration2):
+        return 1
+    else:
+        return -1
     
+
 def cmpdateslab (date1,date2):
     
     """
@@ -215,7 +272,12 @@ def omapcmpDate (date1,date2):
     else:
         return -1
 
+def cmpdur(avis1, avis2):
 
+    return (avis1['city'] +'-'+ avis1['country']) < (avis2['city'] +'-'+ avis2['country'])
 
 # Funciones de ordenamiento
 
+def sortduration(list):
+
+    ms.sort(list, cmpdur)

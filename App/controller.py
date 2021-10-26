@@ -45,17 +45,26 @@ def loadData(analyzer):
     """
     Carga los datos de los archivos CSV en el modelo
     """
-    avisfile = cf.data_dir + '/UFOS/UFOS-utf8-large.csv'
+    avisfile = cf.data_dir + '/UFOS/UFOS-utf8-small.csv'
     input_file = csv.DictReader(open(avisfile, encoding="utf-8"),
                                 delimiter=",")
     for avistamiento in input_file:
         model.addAvistamiento(analyzer, avistamiento)
+    
+    sortDurationIndex(analyzer)
     return analyzer
 
 
 # Funciones de ordenamiento
+def sortDurationIndex(analyzer):
+
+    return model.sortDurationIndex(analyzer)
 
 # Funciones de consulta sobre el catálogo
 def getCitySights (analyzer, city):
 
     return model.getCitySights(analyzer, city)
+
+def getDurationSights(analyzer,lim_inf, lim_sup):
+
+    return model.getDurationSights(analyzer, lim_inf, lim_sup)

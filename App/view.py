@@ -48,9 +48,8 @@ def printMenu():
     print('6- Contar los avistamientos en un rango de fechas (Req-4)')
     print('7- Contar los avistamientos de una Zona Geográfica (Req-5)')
 
-
-
 catalog = None
+
 def printReq1(analyzer, avistamientos, city):
     size_total = mp.size(analyzer['Sightings_per_city'])
     size_city = lt.size(avistamientos)
@@ -72,6 +71,28 @@ def printReq1(analyzer, avistamientos, city):
         for avis in lt.iterator(avistamientos):
             print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
 
+def printReq2(analyzer, lim_inf, lim_sup,duracionlst, mayordur, mayordur_size):
+    size = lt.size(duracionlst)
+    print('Se encontraron ' + str(size) + ' avistamientos con duraciones entre: '+ str(lim_inf) + '-'+str(lim_sup) + ' s.\n')
+
+    print('La mayor duración reportada fue de: ' + str(mayordur) + ' s y en esta se reportaron ' + str(mayordur_size) + ' avistamientos.\n')
+
+    print('Los primeros 3 y ultimos 3 avistamientos en el rango de duración solicitado son: \n')
+
+    if size > 6:
+
+        first3 = lt.subList(duracionlst,1,3)
+        last3 = lt.subList(duracionlst,size - 2,3)
+
+        for avis in lt.iterator(first3):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
+        
+        for avis in lt.iterator(last3):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
+
+    else:
+        for avis in lt.iterator(duracionlst):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
 
 """
 Menu principal
@@ -118,7 +139,15 @@ while True:
         avistamientos = controller.getCitySights(analyzer,city)
 
         printReq1(analyzer, avistamientos, city)
-        
+    
+    elif int(inputs[0]) == 4:
+
+        lim_inf = int(input('Menor duración en segundos a consultar: '))
+        lim_sup = int(input('Mayor duración en segundos a consultar: '))
+
+        duracion = controller.getDurationSights(analyzer,lim_inf,lim_sup)
+
+        printReq2(analyzer, lim_inf, lim_sup,duracion[0], duracion[1], duracion[2])
 
         
 

@@ -261,6 +261,8 @@ def getSightsinRange(analyzer, lim_inf, lim_sup):
     date_oldest_size = lt.size(date_oldest_value['Sightslst'])
     date_inrange = om.values(date_omap,lim_inf_f,lim_sup_f)
 
+    #habrá que organizar por hora tbn?
+
     for date in lt.iterator(date_inrange):
         for avis in lt.iterator(date['Sightslst']):
             lt.addLast(rangelst,avis)

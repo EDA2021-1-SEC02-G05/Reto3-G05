@@ -56,8 +56,8 @@ def newAnalyzer():
                 }
 
     analyzer['ufos_list'] = lt.newList('ARRAY_LIST')
-    #analyzer['Sightings_citylab'] = om.newMap('RTB',
-    #                                         comparefunction = compareCity)
+    analyzer['Sightings_citylab'] = om.newMap('RTB',
+                                             comparefunction = compareCity)
     analyzer['Sightings_per_city'] = mp.newMap(numelements = 100,
                                                 maptype='PROBBING',
                                                 loadfactor=0.5,
@@ -70,7 +70,7 @@ def newAnalyzer():
 def addAvistamiento(analyzer, avistamiento):
 
     lt.addLast(analyzer['ufos_list'], avistamiento)
-    #updateCityIndexlab(analyzer['Sightings_citylab'], avistamiento)
+    updateCityIndexlab(analyzer['Sightings_citylab'], avistamiento)
     updateCityIndex(analyzer['Sightings_per_city'], avistamiento)
     updateDurationIndex(analyzer['Sightings_per_duration'], avistamiento)
     return analyzer

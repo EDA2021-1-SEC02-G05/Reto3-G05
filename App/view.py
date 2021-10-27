@@ -128,12 +128,14 @@ while True:
     elif int(inputs[0]) == 3:
         """
         LAB 8
+        """
         elements = om.size(analyzer['Sightings_citylab'])
         height = om.height(analyzer['Sightings_citylab'])
+        
 
         print('Número de elementos en el arbol: ' + str(elements))
         print('Altura del arbol: ' + str(height))
-        """
+        
         city = (input('Nombre de la ciudad a consultar: ')).lower()
 
         avistamientos = controller.getCitySights(analyzer,city)
@@ -148,6 +150,14 @@ while True:
         duracion = controller.getDurationSights(analyzer,lim_inf,lim_sup)
 
         printReq2(analyzer, lim_inf, lim_sup,duracion[0], duracion[1], duracion[2])
+
+    elif int(inputs[0]) == 5:
+        papa = 2
+
+
+    elif int(inputs[0]) == 6:
+
+        lim_inf = 3
 
         
 

@@ -71,7 +71,7 @@ def printReq1(analyzer, avistamientos, city):
         for avis in lt.iterator(avistamientos):
             print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
 
-def printReq2(analyzer, lim_inf, lim_sup,duracionlst, mayordur, mayordur_size):
+def printReq2( lim_inf, lim_sup,duracionlst, mayordur, mayordur_size):
     size = lt.size(duracionlst)
     print('Se encontraron ' + str(size) + ' avistamientos con duraciones entre: '+ str(lim_inf) + '-'+str(lim_sup) + ' s.\n')
 
@@ -93,6 +93,31 @@ def printReq2(analyzer, lim_inf, lim_sup,duracionlst, mayordur, mayordur_size):
     else:
         for avis in lt.iterator(duracionlst):
             print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
+
+def printReq4(datelst,oldest_date,oldest_size, lim_inf,lim_sup):
+    size = lt.size(datelst)
+
+    print('Se encontraron ' + str(size) + ' avistamientos ocurridos en fechas entre: '+ str(lim_inf) + ' y '+str(lim_sup) + '\n')
+
+    print('La fecha más antigua reportada de un avistamiento es ' + str(oldest_date) + ' y se encontraron ' + str(oldest_size) + ' avistamientos con esta fecha.\n')
+
+    print('Los primeros 3 y ultimos 3 avistamientos en el rango de fechas solicitadas son: \n')
+
+    if size > 6:
+
+        first3 = lt.subList(datelst,1,3)
+        last3 = lt.subList(datelst,size - 2,3)
+
+        for avis in lt.iterator(first3):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
+        
+        for avis in lt.iterator(last3):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
+
+    else:
+        for avis in lt.iterator(datelst):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
+
 
 """
 Menu principal
@@ -149,7 +174,7 @@ while True:
 
         duracion = controller.getDurationSights(analyzer,lim_inf,lim_sup)
 
-        printReq2(analyzer, lim_inf, lim_sup,duracion[0], duracion[1], duracion[2])
+        printReq2( lim_inf, lim_sup,duracion[0], duracion[1], duracion[2])
 
     elif int(inputs[0]) == 5:
         papa = 2
@@ -157,7 +182,14 @@ while True:
 
     elif int(inputs[0]) == 6:
 
-        lim_inf = 3
+        lim_inf = input('limite inferior del rango a consultar (AAAA-MM-DD): ')
+        lim_sup = input('limite superior del rango a consultar (AAAA-MM-DD): ')
+
+        rango = controller.getSightsinRange(analyzer, lim_inf, lim_sup)
+
+        printReq4(rango[0],rango[1], rango[2], lim_inf,lim_sup)
+
+        
 
         
 

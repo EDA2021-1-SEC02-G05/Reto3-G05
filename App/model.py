@@ -53,26 +53,30 @@ def newAnalyzer():
                 'Sightings_citylab':None,
                 'Sightings_per_city': None,
                 'Sightings_per_duration':None,
+                'Sightings_per_date': None,
                 }
 
     analyzer['ufos_list'] = lt.newList('ARRAY_LIST')
-    analyzer['Sightings_citylab'] = om.newMap('RTB',
-                                             comparefunction = compareCity)
+    #analyzer['Sightings_citylab'] = om.newMap('RTB',
+    #                                         comparefunction = compareCityLab)
     analyzer['Sightings_per_city'] = mp.newMap(numelements = 100,
                                                 maptype='PROBBING',
                                                 loadfactor=0.5,
                                                 comparefunction=compareCity)
     analyzer['Sightings_per_duration'] = om.newMap('RBT',
                                                    comparefunction = compareduration)
+    analyzer['Sightings_per_date'] = om.newMap('RBT',
+                                                comparefunction = comparedates)
     return analyzer
 
 # Funciones para agregar informacion al catalogo
 def addAvistamiento(analyzer, avistamiento):
 
     lt.addLast(analyzer['ufos_list'], avistamiento)
-    updateCityIndexlab(analyzer['Sightings_citylab'], avistamiento)
+    #updateCityIndexlab(analyzer['Sightings_citylab'], avistamiento)
     updateCityIndex(analyzer['Sightings_per_city'], avistamiento)
     updateDurationIndex(analyzer['Sightings_per_duration'], avistamiento)
+    updateDateIndex(analyzer['Sightings_per_date'], avistamiento)
     return analyzer
 
 def updateCityIndexlab(map,avistamiento):
@@ -148,6 +152,21 @@ def sortDurationIndex(analyzer):
         sights_list = me.getValue(duration_entry)
         sortduration(sights_list['Sightslst'])
 
+def updateDateIndex(map, avistamiento):
+
+    date = datetime.datetime.strptime(avistamiento['datetime'], '%Y-%m-%d %H:%M:%S')
+
+    entry = om.get(map,date.date())
+
+    if entry is None:
+        datentry = newDateEntryreq4(date)
+        lt.addLast(datentry['Sightslst'],avistamiento)
+        om.put(map,date.date(),datentry)
+    else:
+        datentry = me.getValue(entry)
+        lt.addLast(datentry['Sightslst'], avistamiento)
+
+    return map
     
 # Funciones para creacion de datos
 
@@ -182,6 +201,16 @@ def newDurationEntrylab(duration):
     entry['Sightslst'] = lt.newList('ARRAY_LIST')
 
     return entry
+
+def newDateEntryreq4(date):
+
+    entry = {'Date': date, 'Sightslst': None}
+
+    entry['Sightslst'] = lt.newList('ARRAY_LIST')
+
+    return entry
+
+
 # Funciones de consulta
 
 def getCitySights (analyzer, city):
@@ -218,8 +247,38 @@ def getDurationSights(analyzer,lim_inf, lim_sup):
 
     return durationlst, duration_max, duration_max_size
 
+def getSightsinRange(analyzer, lim_inf, lim_sup):
+    #lim_inf_split = (lim_inf).split('-')
+    #(int(lim_inf_split[0]),int(lim_inf_split[1]),int(lim_inf_split[2]))
+    lim_inf_f = (datetime.datetime.strptime(lim_inf,'%Y-%m-%d')).date()
+    lim_sup_f = (datetime.datetime.strptime(lim_sup,'%Y-%m-%d')).date()
+    rangelst = lt.newList('ARRAY_LIST')
 
+    date_omap = analyzer['Sightings_per_date']
+    date_oldest = om.minKey(date_omap)
+    date_oldest_entry = om.get(date_omap,date_oldest)
+    date_oldest_value = me.getValue(date_oldest_entry)
+    date_oldest_size = lt.size(date_oldest_value['Sightslst'])
+    date_inrange = om.values(date_omap,lim_inf_f,lim_sup_f)
+
+    for date in lt.iterator(date_inrange):
+        for avis in lt.iterator(date['Sightslst']):
+            lt.addLast(rangelst,avis)
+
+    return rangelst, date_oldest, date_oldest_size
 # Funciones utilizadas para comparar elementos dentro de una lista
+
+def compareCityLab(city1, city2):
+    """
+    Compara dos ciudades 
+    """
+    if (city1 == city2):
+        return 0
+    elif (city1 > city2):
+        return 1
+    else:
+        return -1
+
 def compareCity(city1, entry):
     """
     Compara dos ciudades 
@@ -239,7 +298,16 @@ def compareduration(duration1,duration2):
         return 1
     else:
         return -1
-    
+
+def comparedates(date1,date2):
+
+    if (date1 == date2):
+        return 0
+    elif (date1 > date2):
+        return 1
+    else:
+        return -1
+
 
 def cmpdateslab (date1,date2):
     

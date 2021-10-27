@@ -68,3 +68,7 @@ def getCitySights (analyzer, city):
 def getDurationSights(analyzer,lim_inf, lim_sup):
 
     return model.getDurationSights(analyzer, lim_inf, lim_sup)
+
+def getSightsinRange(analyzer, lim_inf, lim_sup):
+
+    return model.getSightsinRange(analyzer, lim_inf, lim_sup)

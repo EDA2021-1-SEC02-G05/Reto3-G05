@@ -153,14 +153,14 @@ while True:
     elif int(inputs[0]) == 3:
         """
         LAB 8
-        """
+        
         elements = om.size(analyzer['Sightings_citylab'])
         height = om.height(analyzer['Sightings_citylab'])
         
 
         print('Número de elementos en el arbol: ' + str(elements))
         print('Altura del arbol: ' + str(height))
-        
+        """
         city = (input('Nombre de la ciudad a consultar: ')).lower()
 
         avistamientos = controller.getCitySights(analyzer,city)

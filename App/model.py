@@ -53,6 +53,7 @@ def newAnalyzer():
                 'Sightings_citylab':None,
                 'Sightings_per_city': None,
                 'Sightings_per_duration':None,
+                'Sightings_per_time': None,
                 'Sightings_per_date': None,
                 }
 
@@ -65,6 +66,8 @@ def newAnalyzer():
                                                 comparefunction=compareCity)
     analyzer['Sightings_per_duration'] = om.newMap('RBT',
                                                    comparefunction = compareduration)
+    analyzer['Sightings_per_time'] = om.newMap('RBT',
+                                                comparefunction = comparetime)
     analyzer['Sightings_per_date'] = om.newMap('RBT',
                                                 comparefunction = comparedates)
     return analyzer
@@ -76,7 +79,9 @@ def addAvistamiento(analyzer, avistamiento):
     #updateCityIndexlab(analyzer['Sightings_citylab'], avistamiento)
     updateCityIndex(analyzer['Sightings_per_city'], avistamiento)
     updateDurationIndex(analyzer['Sightings_per_duration'], avistamiento)
+    updateTimeIndex(analyzer['Sightings_per_time'], avistamiento)
     updateDateIndex(analyzer['Sightings_per_date'], avistamiento)
+
     return analyzer
 
 def updateCityIndexlab(map,avistamiento):
@@ -151,7 +156,25 @@ def sortDurationIndex(analyzer):
         duration_entry = om.get(duration_omap, key)
         sights_list = me.getValue(duration_entry)
         sortduration(sights_list['Sightslst'])
+###
+def updateTimeIndex(map, avistamiento):
 
+    date = datetime.datetime.strptime(avistamiento['datetime'], '%Y-%m-%d %H:%M:%S')
+    time = datetime.time(int(date.hour), int(date.minute))
+    
+
+    entry = om.get(map,time)
+
+    if entry is None:
+        timentry = newTimeEntry(time)
+        lt.addLast(timentry['Sightslst'],avistamiento)
+        om.put(map,time,timentry)
+    else:
+        datentry = me.getValue(entry)
+        lt.addLast(datentry['Sightslst'], avistamiento)
+
+    return map
+####
 def updateDateIndex(map, avistamiento):
 
     date = datetime.datetime.strptime(avistamiento['datetime'], '%Y-%m-%d %H:%M:%S')
@@ -202,6 +225,14 @@ def newDurationEntrylab(duration):
 
     return entry
 
+def newTimeEntry(date):
+
+    entry = {'Date': date, 'Sightslst': None}
+
+    entry['Sightslst'] = lt.newList('ARRAY_LIST')
+
+    return entry
+
 def newDateEntryreq4(date):
 
     entry = {'Date': date, 'Sightslst': None}
@@ -246,6 +277,28 @@ def getDurationSights(analyzer,lim_inf, lim_sup):
 
 
     return durationlst, duration_max, duration_max_size
+def getreq3(analyzer, lim_inf, lim_sup):
+    #lim_inf_split = (lim_inf).split('-')
+    #(int(lim_inf_split[0]),int(lim_inf_split[1]),int(lim_inf_split[2]))
+    lim_inf_f = (datetime.datetime.strptime(lim_inf,'%H:%M')).date()
+    lim_sup_f = (datetime.datetime.strptime(lim_sup,'%H:%M')).date()
+    rangelst = lt.newList('ARRAY_LIST')
+
+    date_omap = analyzer['Sightings_per_time']
+    date_oldest = om.minKey(date_omap)
+    date_oldest_entry = om.get(date_omap,date_oldest)
+    date_oldest_value = me.getValue(date_oldest_entry)
+    date_oldest_size = lt.size(date_oldest_value['Sightslst'])
+    date_inrange = om.values(date_omap,lim_inf_f,lim_sup_f)
+
+    #habrá que organizar por hora tbn?
+
+    for date in lt.iterator(date_inrange):
+        for avis in lt.iterator(date['Sightslst']):
+            lt.addLast(rangelst,avis)
+
+    return rangelst, date_oldest, date_oldest_size
+# Funciones utilizadas para comparar elementos dentro de una lista
 
 def getSightsinRange(analyzer, lim_inf, lim_sup):
     #lim_inf_split = (lim_inf).split('-')
@@ -297,6 +350,15 @@ def compareduration(duration1,duration2):
     if (duration1 == duration2):
         return 0
     elif (duration1 > duration2):
+        return 1
+    else:
+        return -1
+
+def comparetime(time1,time2):
+
+    if (time1 == time2):
+        return 0
+    elif (time1 > time2):
         return 1
     else:
         return -1

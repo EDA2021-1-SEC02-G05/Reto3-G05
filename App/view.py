@@ -177,7 +177,12 @@ while True:
         printReq2( lim_inf, lim_sup,duracion[0], duracion[1], duracion[2])
 
     elif int(inputs[0]) == 5:
-        papa = 2
+        lim_inf = input('limite inferior del rango a consultar (HH:MM): ')
+        lim_sup = input('limite superior del rango a consultar (HH:MM): ')
+
+        duracion = controller.getDurationSights(analyzer,lim_inf,lim_sup)
+
+        print(duracion)
 
 
     elif int(inputs[0]) == 6:

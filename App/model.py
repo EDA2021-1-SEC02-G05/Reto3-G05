@@ -167,7 +167,17 @@ def updateDateIndex(map, avistamiento):
         lt.addLast(datentry['Sightslst'], avistamiento)
 
     return map
-    
+
+def sortDateIndex(analyzer):
+    date_omap = analyzer['Sightings_per_date']
+
+    date_keys = om.keySet(date_omap)
+
+    for key in lt.iterator(date_keys):
+        date_entry = om.get(date_omap, key)
+        sights_list = me.getValue(date_entry)
+        sortdate(sights_list['Sightslst'])
+
 # Funciones para creacion de datos
 
 def newCityEntrylab(city, avistamiento):
@@ -351,3 +361,7 @@ def cmpdur(avis1, avis2):
 def sortduration(list):
 
     ms.sort(list, cmpdur)
+
+def sortdate(list):
+    
+    ms.sort(list, cmphour)

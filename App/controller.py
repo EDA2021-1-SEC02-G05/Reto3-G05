@@ -52,6 +52,7 @@ def loadData(analyzer):
         model.addAvistamiento(analyzer, avistamiento)
     
     sortDurationIndex(analyzer)
+    sortDateIndex(analyzer)
     return analyzer
 
 
@@ -59,6 +60,10 @@ def loadData(analyzer):
 def sortDurationIndex(analyzer):
 
     return model.sortDurationIndex(analyzer)
+
+def sortDateIndex(analyzer):
+
+    return model.sortDateIndex(analyzer)
 
 # Funciones de consulta sobre el catálogo
 def getCitySights (analyzer, city):

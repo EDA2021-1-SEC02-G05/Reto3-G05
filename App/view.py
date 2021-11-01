@@ -194,12 +194,12 @@ while True:
 
         printReq4(rango[0],rango[1], rango[2], lim_inf,lim_sup)
 
-        
+    elif int(inputs[0]) == 7:
+
+        lim_longitud = input('límite mínimo y máximo de longitud: ')
+        lim_ltitud = input('límite mínimo yy máximo de latitud:  ')
 
         
-
-
-
 
     else:
         sys.exit(0)

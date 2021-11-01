@@ -180,7 +180,7 @@ while True:
         lim_inf = input('limite inferior del rango a consultar (HH:MM): ')
         lim_sup = input('limite superior del rango a consultar (HH:MM): ')
 
-        duracion = controller.getDurationSights(analyzer,lim_inf,lim_sup)
+        duracion = controller.getreq3(analyzer,lim_inf,lim_sup)
 
         print(duracion)
 

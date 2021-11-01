@@ -77,3 +77,7 @@ def getDurationSights(analyzer,lim_inf, lim_sup):
 def getSightsinRange(analyzer, lim_inf, lim_sup):
 
     return model.getSightsinRange(analyzer, lim_inf, lim_sup)
+
+def getSightsLocation(analyzer, lim_longitudmin, lim_longitudmax, lim_latitudmin, lim_latitudmax):
+
+    return model.getSightsLocation(analyzer, lim_longitudmin, lim_longitudmax, lim_latitudmin, lim_latitudmax)

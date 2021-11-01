@@ -118,6 +118,24 @@ def printReq4(datelst,oldest_date,oldest_size, lim_inf,lim_sup):
         for avis in lt.iterator(datelst):
             print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
 
+def printReq5(respuesta):
+
+    size = lt.size(respuesta)
+
+    if size > 10 :
+
+        first5 = lt.subList(respuesta,1,5)
+        last5 = lt.subList(respuesta,size - 4,5)
+
+        for avis in lt.iterator(first5):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + ', Latitud: ' + str(round(float(avis['latitude']),3)) + ', Longitud: ' + str(round(float(avis['longitude']),3)) +'\n')
+        
+        for avis in lt.iterator(last5):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + ', Latitud: ' + str(round(float(avis['latitude']),3)) + ', Longitud: ' + str(round(float(avis['longitude']), 3)) +'\n')
+
+    else:
+        for avis in lt.iterator(respuesta):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + ', Latitud: ' + str(round(float(avis['latitude']), 3)) + ', Longitud: ' + str(round(float(avis['longitude']), 3)) +'\n')
 
 """
 Menu principal
@@ -133,8 +151,6 @@ while True:
     elif int(inputs[0]) == 2:
         print("Cargando información de los archivos ....")
         controller.loadData(analyzer)
-
-        print(analyzer['Sightings_per_location'])
 
         size = lt.size(analyzer['ufos_list'])
 
@@ -198,15 +214,16 @@ while True:
 
     elif int(inputs[0]) == 7:
 
-        lim_longitudmin = input('límite mínimo de longitud: ')
-        lim_longitudmax= input('límite máximo de longitud: ')
+        lim_longitudmin = float(input('límite mínimo de longitud: '))
+        lim_longitudmax= float(input('límite máximo de longitud: '))
 
-        lim_latitudmin = input('límite mínimo de latitud:  ')
-        lim_latitudmax = input('límite máximo de latitud:  ')
+        lim_latitudmin = float(input('límite mínimo de latitud:  '))
+        lim_latitudmax = float(input('límite máximo de latitud:  '))
 
         respuesta = controller.getSightsLocation(analyzer, lim_longitudmin, lim_longitudmax, lim_latitudmin, lim_latitudmax)
 
-        
+        printReq5(respuesta)
+
 
     else:
         sys.exit(0)

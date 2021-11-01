@@ -72,7 +72,7 @@ def newAnalyzer():
     analyzer['Sightings_per_date'] = om.newMap('RBT',
                                                 comparefunction = comparedates)
     analyzer['Sightings_per_location'] = om.newMap('RBT',
-                                                comparefunction = comparelongitudes)
+                                                comparefunction = comparelatitudes)
                             
     return analyzer
 
@@ -85,7 +85,7 @@ def addAvistamiento(analyzer, avistamiento):
     updateDurationIndex(analyzer['Sightings_per_duration'], avistamiento)
     updateTimeIndex(analyzer['Sightings_per_time'], avistamiento)
     updateDateIndex(analyzer['Sightings_per_date'], avistamiento)
-    updateLogitudIndex(analyzer['Sightings_per_location'], avistamiento)
+    updateLatitudIndex(analyzer['Sightings_per_location'], avistamiento)
 
     return analyzer
 
@@ -216,37 +216,37 @@ def sortDateIndex(analyzer):
         sights_list = me.getValue(date_entry)
         sortdate(sights_list['Sightslst'])
 
-def updateLogitudIndex(map, avistamiento):
-    longitud = round(float(avistamiento['longitude']), 2)
+def updateLatitudIndex(map, avistamiento):
+    latitud = round(float(avistamiento['latitude']), 2)
     
-    entry = om.get(map, longitud)
+    entry = om.get(map, latitud)
     if entry is None:
-        logitudentry = newLongitudeEntry(longitud)
-        om.put(map, longitud, logitudentry)
+        latitudentry = newlatitudEntry(latitud)
+        om.put(map, latitud, latitudentry)
 
     else:
-        logitudentry = me.getValue(entry)
+        latitudentry = me.getValue(entry)
 
-    addLatitudeIndex(logitudentry, avistamiento)
+    addLongitudIndex(latitudentry, avistamiento)
 
     return map
 
-def addLatitudeIndex(logitudentry, avistamiento):
+def addLongitudIndex(latitudentry, avistamiento):
 
-    latitud = round(float(avistamiento['latitude']), 2)
-    longitud_index = logitudentry['LatitudeTree']
+    longitud = round(float(avistamiento['longitude']), 2)
+    latitud_index = latitudentry['LongitudeTree']
 
-    entry = om.get(longitud_index, latitud)
+    entry = om.get(latitud_index, longitud)
 
     if entry is None:
-        latitudentry = newLatitudEntry(latitud)
-        lt.addLast(latitudentry['Sightslst'],avistamiento)
-        om.put(longitud_index,latitud,latitudentry)
+        longitudentry = newLongitudEntry(longitud)
+        lt.addLast(longitudentry['Sightslst'],avistamiento)
+        om.put(latitud_index,longitud,longitudentry)
     else:
-        latitudentry = me.getValue(entry)
-        lt.addLast(latitudentry['Sightslst'], avistamiento)
+        longitudentry = me.getValue(entry)
+        lt.addLast(longitudentry['Sightslst'], avistamiento)
 
-    return logitudentry
+    return latitudentry
 
 # Funciones para creacion de datos
 
@@ -298,18 +298,18 @@ def newDateEntryreq4(date):
 
     return entry
 
-def newLongitudeEntry(longitud):
+def newlatitudEntry(latitud):
 
-    entry = {'Longitud': longitud, 'LatitudeTree': None}
+    entry = {'Latitude': latitud, 'LongitudeTree': None}
 
-    entry['LatitudeTree'] = om.newMap('RBT',
-                                    comparefunction = comparelatitudes)
+    entry['LongitudeTree'] = om.newMap('RBT',
+                                    comparefunction = comparelongitudes)
 
     return entry
 
-def newLatitudEntry(latitud):
+def newLongitudEntry(longitud):
 
-    entry = {'Latitud': latitud, 'Sightslst': None}
+    entry = {'Longitud': longitud, 'Sightslst': None}
 
     entry['Sightslst'] = lt.newList('ARRAY_LIST')
 
@@ -395,6 +395,26 @@ def getSightsinRange(analyzer, lim_inf, lim_sup):
 
     return rangelst, date_oldest, date_oldest_size
 
+def getSightsLocation(analyzer, lim_longitudmin, lim_longitudmax, lim_latitudmin, lim_latitudmax):
+
+    rangelst = lt.newList('ARRAY_LIST')
+
+    latitude_tree = analyzer['Sightings_per_location']
+
+    latitud_inrange = om.values(latitude_tree, lim_latitudmin, lim_latitudmax) 
+
+    for latitud in lt.iterator(latitud_inrange):
+
+        longitude_tree = latitud['LongitudeTree']
+
+        longitud_inrange = om.values(longitude_tree,lim_longitudmin, lim_longitudmax )
+
+        for longitud in lt.iterator(longitud_inrange):
+            for avis in lt.iterator(longitud['Sightslst']):
+                lt.addLast(rangelst,avis)
+
+
+    return rangelst
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def compareCityLab(city1, city2):

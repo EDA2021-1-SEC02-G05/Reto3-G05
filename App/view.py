@@ -137,6 +137,7 @@ def printReq5(respuesta):
         for avis in lt.iterator(respuesta):
             print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + ', Latitud: ' + str(round(float(avis['latitude']), 3)) + ', Longitud: ' + str(round(float(avis['longitude']), 3)) +'\n')
 
+
 """
 Menu principal
 """

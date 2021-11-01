@@ -353,8 +353,8 @@ def getDurationSights(analyzer,lim_inf, lim_sup):
 
 def getreq3(analyzer, lim_inf, lim_sup):
 
-    lim_inf_f = (datetime.time(lim_inf,'%H:%M'))
-    lim_sup_f = (datetime.time(lim_sup,'%H:%M'))
+    lim_inf_f = (datetime.time(lim_inf,'%H:%M')).date()
+    lim_sup_f = (datetime.time(lim_sup,'%H:%M')).date()
     rangelst = lt.newList('ARRAY_LIST')
 
     time_omap = analyzer['Sightings_per_time']

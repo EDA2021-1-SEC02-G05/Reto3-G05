@@ -134,6 +134,8 @@ while True:
         print("Cargando información de los archivos ....")
         controller.loadData(analyzer)
 
+        print(analyzer['Sightings_per_location'])
+
         size = lt.size(analyzer['ufos_list'])
 
         print('El total de avistamiento cargados es de: '+ str(size))
@@ -196,8 +198,13 @@ while True:
 
     elif int(inputs[0]) == 7:
 
-        lim_longitud = input('límite mínimo y máximo de longitud: ')
-        lim_ltitud = input('límite mínimo yy máximo de latitud:  ')
+        lim_longitudmin = input('límite mínimo de longitud: ')
+        lim_longitudmax= input('límite máximo de longitud: ')
+
+        lim_latitudmin = input('límite mínimo de latitud:  ')
+        lim_latitudmax = input('límite máximo de latitud:  ')
+
+        respuesta = controller.getSightsLocation(analyzer, lim_longitudmin, lim_longitudmax, lim_latitudmin, lim_latitudmax)
 
         
 

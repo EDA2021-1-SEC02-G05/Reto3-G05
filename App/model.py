@@ -55,6 +55,7 @@ def newAnalyzer():
                 'Sightings_per_duration':None,
                 'Sightings_per_time': None,
                 'Sightings_per_date': None,
+                'Sightings_per_location':None,
                 }
 
     analyzer['ufos_list'] = lt.newList('ARRAY_LIST')
@@ -70,6 +71,9 @@ def newAnalyzer():
                                                 comparefunction = comparetime)
     analyzer['Sightings_per_date'] = om.newMap('RBT',
                                                 comparefunction = comparedates)
+    analyzer['Sightings_per_location'] = om.newMap('RBT',
+                                                comparefunction = comparelongitudes)
+                            
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -81,6 +85,7 @@ def addAvistamiento(analyzer, avistamiento):
     updateDurationIndex(analyzer['Sightings_per_duration'], avistamiento)
     updateTimeIndex(analyzer['Sightings_per_time'], avistamiento)
     updateDateIndex(analyzer['Sightings_per_date'], avistamiento)
+    updateLogitudIndex(analyzer['Sightings_per_location'], avistamiento)
 
     return analyzer
 
@@ -162,7 +167,6 @@ def updateTimeIndex(map, avistamiento):
     date = datetime.datetime.strptime(avistamiento['datetime'], '%Y-%m-%d %H:%M:%S')
     time = datetime.time(int(date.hour), int(date.minute))
     
-
     entry = om.get(map,time)
 
     if entry is None:
@@ -211,6 +215,38 @@ def sortDateIndex(analyzer):
         date_entry = om.get(date_omap, key)
         sights_list = me.getValue(date_entry)
         sortdate(sights_list['Sightslst'])
+
+def updateLogitudIndex(map, avistamiento):
+    longitud = round(float(avistamiento['longitude']), 2)
+    
+    entry = om.get(map, longitud)
+    if entry is None:
+        logitudentry = newLongitudeEntry(longitud)
+        om.put(map, longitud, logitudentry)
+
+    else:
+        logitudentry = me.getValue(entry)
+
+    addLatitudeIndex(logitudentry, avistamiento)
+
+    return map
+
+def addLatitudeIndex(logitudentry, avistamiento):
+
+    latitud = round(float(avistamiento['latitude']), 2)
+    longitud_index = logitudentry['LatitudeTree']
+
+    entry = om.get(longitud_index, latitud)
+
+    if entry is None:
+        latitudentry = newLatitudEntry(latitud)
+        lt.addLast(latitudentry['Sightslst'],avistamiento)
+        om.put(longitud_index,latitud,latitudentry)
+    else:
+        latitudentry = me.getValue(entry)
+        lt.addLast(latitudentry['Sightslst'], avistamiento)
+
+    return logitudentry
 
 # Funciones para creacion de datos
 
@@ -262,6 +298,22 @@ def newDateEntryreq4(date):
 
     return entry
 
+def newLongitudeEntry(longitud):
+
+    entry = {'Longitud': longitud, 'LatitudeTree': None}
+
+    entry['LatitudeTree'] = om.newMap('RBT',
+                                    comparefunction = comparelatitudes)
+
+    return entry
+
+def newLatitudEntry(latitud):
+
+    entry = {'Latitud': latitud, 'Sightslst': None}
+
+    entry['Sightslst'] = lt.newList('ARRAY_LIST')
+
+    return entry
 
 # Funciones de consulta
 
@@ -324,8 +376,7 @@ def getreq3(analyzer, lim_inf, lim_sup):
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def getSightsinRange(analyzer, lim_inf, lim_sup):
-    #lim_inf_split = (lim_inf).split('-')
-    #(int(lim_inf_split[0]),int(lim_inf_split[1]),int(lim_inf_split[2]))
+
     lim_inf_f = (datetime.datetime.strptime(lim_inf,'%Y-%m-%d')).date()
     lim_sup_f = (datetime.datetime.strptime(lim_sup,'%Y-%m-%d')).date()
     rangelst = lt.newList('ARRAY_LIST')
@@ -337,13 +388,13 @@ def getSightsinRange(analyzer, lim_inf, lim_sup):
     date_oldest_size = lt.size(date_oldest_value['Sightslst'])
     date_inrange = om.values(date_omap,lim_inf_f,lim_sup_f)
 
-    #habrá que organizar por hora tbn?
 
     for date in lt.iterator(date_inrange):
         for avis in lt.iterator(date['Sightslst']):
             lt.addLast(rangelst,avis)
 
     return rangelst, date_oldest, date_oldest_size
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def compareCityLab(city1, city2):
@@ -430,6 +481,23 @@ def omapcmpDate (date1,date2):
 def cmpdur(avis1, avis2):
 
     return (avis1['city'] +'-'+ avis1['country']) < (avis2['city'] +'-'+ avis2['country'])
+
+def comparelongitudes(long1, long2):
+    if (float(long1) == float(long2)):
+        return 0
+    elif (float(long1) > float(long2)):
+        return 1
+    else:
+        return -1
+
+def comparelatitudes(lat1, lat2):
+
+    if (float(lat1) == float(lat2)):
+        return 0
+    elif (float(lat1) > float(lat2)):
+        return 1
+    else:
+        return -1
 
 # Funciones de ordenamiento
 

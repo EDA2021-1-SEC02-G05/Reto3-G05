@@ -174,6 +174,17 @@ def updateTimeIndex(map, avistamiento):
         lt.addLast(datentry['Sightslst'], avistamiento)
 
     return map
+
+def sortTimeIndex(analyzer):
+    time_omap = analyzer['Sightings_per_time']
+
+    time_keys = om.keySet(time_omap)
+
+    for key in lt.iterator(time_keys):
+        time_entry = om.get(time_omap, key)
+        sights_list = me.getValue(time_entry)
+        sortdate(sights_list['Sightslst'])
+
 ####
 def updateDateIndex(map, avistamiento):
 
@@ -235,9 +246,9 @@ def newDurationEntrylab(duration):
 
     return entry
 
-def newTimeEntry(date):
+def newTimeEntry(time):
 
-    entry = {'Date': date, 'Sightslst': None}
+    entry = {'Time': time, 'Sightslst': None}
 
     entry['Sightslst'] = lt.newList('ARRAY_LIST')
 
@@ -287,27 +298,29 @@ def getDurationSights(analyzer,lim_inf, lim_sup):
 
 
     return durationlst, duration_max, duration_max_size
+
 def getreq3(analyzer, lim_inf, lim_sup):
-    #lim_inf_split = (lim_inf).split('-')
-    #(int(lim_inf_split[0]),int(lim_inf_split[1]),int(lim_inf_split[2]))
-    lim_inf_f = (datetime.datetime.strptime(lim_inf,'%H:%M')).date()
-    lim_sup_f = (datetime.datetime.strptime(lim_sup,'%H:%M')).date()
+
+    lim_inf_f = (datetime.time(lim_inf,'%H:%M'))
+    lim_sup_f = (datetime.time(lim_sup,'%H:%M'))
     rangelst = lt.newList('ARRAY_LIST')
 
-    date_omap = analyzer['Sightings_per_time']
-    date_oldest = om.minKey(date_omap)
-    date_oldest_entry = om.get(date_omap,date_oldest)
-    date_oldest_value = me.getValue(date_oldest_entry)
-    date_oldest_size = lt.size(date_oldest_value['Sightslst'])
-    date_inrange = om.values(date_omap,lim_inf_f,lim_sup_f)
+    time_omap = analyzer['Sightings_per_time']
+    
+    time_oldest = om.minKey(time_omap)
+    date_oldest_entry = om.get(time_omap,time_oldest)
+    time_oldest_value = me.getValue(date_oldest_entry)
+    date_oldest_size = lt.size(time_oldest_value['Sightslst'])
+    
+    time_inrange = om.values(time_omap,lim_inf_f,lim_sup_f)
 
     #habrá que organizar por hora tbn?
 
-    for date in lt.iterator(date_inrange):
-        for avis in lt.iterator(date['Sightslst']):
+    for time in lt.iterator(time_inrange):
+        for avis in lt.iterator(time['Sightslst']):
             lt.addLast(rangelst,avis)
 
-    return rangelst, date_oldest, date_oldest_size
+    return rangelst, time_oldest, date_oldest_size
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def getSightsinRange(analyzer, lim_inf, lim_sup):
@@ -359,7 +372,7 @@ def compareCity(city1, entry):
 def compareduration(duration1,duration2):
     if (duration1 == duration2):
         return 0
-    elif (duration1 > duration2):
+    elif (int(duration1) > int(duration2)):
         return 1
     else:
         return -1

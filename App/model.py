@@ -369,10 +369,10 @@ def getreq3(analyzer, lim_inf, lim_sup):
 
     time_omap = analyzer['Sightings_per_time']
     
-    time_oldest = om.minKey(time_omap)
-    date_oldest_entry = om.get(time_omap,time_oldest)
-    time_oldest_value = me.getValue(date_oldest_entry)
-    date_oldest_size = lt.size(time_oldest_value['Sightslst'])
+    time_oldest = om.maxKey(time_omap)
+    time_oldest_entry = om.get(time_omap,time_oldest)
+    time_oldest_value = me.getValue(time_oldest_entry)
+    time_oldest_size = lt.size(time_oldest_value['Sightslst'])
     
     time_inrange = om.values(time_omap,hour1,hour2)
 
@@ -383,7 +383,7 @@ def getreq3(analyzer, lim_inf, lim_sup):
             lt.addLast(rangelst,avis)
 
     sortreq3(rangelst)
-    return rangelst, time_oldest, date_oldest_size
+    return rangelst, time_oldest, time_oldest_size
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def getSightsinRange(analyzer, lim_inf, lim_sup):

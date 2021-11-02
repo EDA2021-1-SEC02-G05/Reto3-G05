@@ -95,6 +95,32 @@ def printReq2( lim_inf, lim_sup,duracionlst, mayordur, mayordur_size):
         for avis in lt.iterator(duracionlst):
             print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
 
+def printReq3(timelst,oldest_time,oldest_size, lim_inf,lim_sup):
+    
+    size = lt.size(timelst)
+
+    print('Se encontraron ' + str(size) + ' avistamientos ocurridos en fechas entre: '+ str(lim_inf) + ' y '+str(lim_sup) + '\n')
+
+    print('La hora más antigua reportada de un avistamiento es ' + str(oldest_time) + ' y se encontraron ' + str(oldest_size) + ' avistamientos con esta hora.\n')
+
+    print('Los primeros 3 y ultimos 3 avistamientos en el rango de fechas solicitadas son: \n')
+
+    if size > 6:
+
+        first3 = lt.subList(timelst,1,3)
+        last3 = lt.subList(timelst,size - 2,3)
+
+        for avis in lt.iterator(first3):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
+        
+        for avis in lt.iterator(last3):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
+
+    else:
+        for avis in lt.iterator(timelst):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
+
+
 def printReq4(datelst,oldest_date,oldest_size, lim_inf,lim_sup):
     size = lt.size(datelst)
 
@@ -203,9 +229,10 @@ while True:
         lim_inf = input('limite inferior del rango a consultar (HH:MM): ')
         lim_sup = input('limite superior del rango a consultar (HH:MM): ')
 
-        duracion = controller.getreq3(analyzer,lim_inf,lim_sup)
+        respuesta = controller.getreq3(analyzer,lim_inf,lim_sup)
 
-        print(duracion)
+        printReq3(respuesta[0],respuesta[1], respuesta[2], lim_inf,lim_sup)
+        #print(respuesta)
 
 
     elif int(inputs[0]) == 6:

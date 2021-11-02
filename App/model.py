@@ -160,9 +160,10 @@ def sortDurationIndex(analyzer):
 def updateTimeIndex(map, avistamiento):
 
     date = datetime.datetime.strptime(avistamiento['datetime'], '%Y-%m-%d %H:%M:%S')
-    time = datetime.time(int(date.hour), int(date.minute))
+    #time = datetime.time(int(date.hour), int(date.minute))
     
-
+    time= date.time()
+    
     entry = om.get(map,time)
 
     if entry is None:
@@ -301,9 +302,16 @@ def getDurationSights(analyzer,lim_inf, lim_sup):
 
 def getreq3(analyzer, lim_inf, lim_sup):
 
-    lim_inf_f = (datetime.time(lim_inf,'%H:%M')).date()
-    lim_sup_f = (datetime.time(lim_sup,'%H:%M')).date()
-    rangelst = lt.newList('ARRAY_LIST')
+    date1 = datetime.datetime.strptime(lim_inf, '%H:%M:%S')
+    date2 = datetime.datetime.strptime(lim_sup, '%H:%M:%S')
+
+    hour1 = date1.time()
+    hour2= date2.time()
+
+    #print(hour1)
+    #print(hour2)
+
+    rangelst = lt.newList('ARRAY_LIST', cmpfunction = cmphour)
 
     time_omap = analyzer['Sightings_per_time']
     
@@ -312,7 +320,7 @@ def getreq3(analyzer, lim_inf, lim_sup):
     time_oldest_value = me.getValue(date_oldest_entry)
     date_oldest_size = lt.size(time_oldest_value['Sightslst'])
     
-    time_inrange = om.values(time_omap,lim_inf_f,lim_sup_f)
+    time_inrange = om.values(time_omap,hour1,hour2)
 
     #habrá que organizar por hora tbn?
 
@@ -320,6 +328,7 @@ def getreq3(analyzer, lim_inf, lim_sup):
         for avis in lt.iterator(time['Sightslst']):
             lt.addLast(rangelst,avis)
 
+    sortreq3(rangelst)
     return rangelst, time_oldest, date_oldest_size
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -372,7 +381,7 @@ def compareCity(city1, entry):
 def compareduration(duration1,duration2):
     if (duration1 == duration2):
         return 0
-    elif (int(duration1) > int(duration2)):
+    elif (duration1 > duration2):
         return 1
     else:
         return -1
@@ -419,6 +428,16 @@ def cmphour (hour1,hour2):
 
     return hour1_num < hour2_num
 
+def cmpfecha (hour1,hour2):
+
+    date1 = datetime.datetime.strptime(hour1['datetime'], '%Y-%m-%d %H:%M:%S')
+    date2 = datetime.datetime.strptime(hour2['datetime'], '%Y-%m-%d %H:%M:%S')
+
+    hour1_num = date1.date()
+    hour2_num = date2.date()
+
+    return hour1_num < hour2_num
+
 def omapcmpDate (date1,date2):
     if (date1 == date2):
         return 0
@@ -440,3 +459,7 @@ def sortduration(list):
 def sortdate(list):
     
     ms.sort(list, cmphour)
+
+def sortreq3(list):
+    
+    ms.sort(list, cmpfecha)

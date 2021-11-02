@@ -31,6 +31,7 @@ from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import mergesort as ms
+import folium
 import datetime
 assert cf
 
@@ -139,13 +140,13 @@ def addDateIndex(cityentry, avistamiento):
     return cityentry
 
 def updateDurationIndex(map, avistamiento):
-    duration = avistamiento['duration (seconds)'].split('.')
+    duration = float(avistamiento['duration (seconds)'])
 
-    entry = om.get(map, int(duration[0]))
+    entry = om.get(map, duration)
 
     if entry is None:
-        durationentry = newDurationEntrylab(int(duration[0]))
-        om.put(map, int(duration[0]), durationentry)
+        durationentry = newDurationEntrylab(duration)
+        om.put(map, duration, durationentry)
     else:
         durationentry = me.getValue(entry) 
     lt.addLast(durationentry['Sightslst'],avistamiento)
@@ -441,9 +442,9 @@ def compareCity(city1, entry):
         return -1
 
 def compareduration(duration1,duration2):
-    if (duration1 == duration2):
+    if (float(duration1) == float(duration2)):
         return 0
-    elif (int(duration1) > int(duration2)):
+    elif (float(duration1) > float(duration2)):
         return 1
     else:
         return -1

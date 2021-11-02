@@ -118,6 +118,28 @@ def printReq4(datelst,oldest_date,oldest_size, lim_inf,lim_sup):
         for avis in lt.iterator(datelst):
             print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + '\n')
 
+def printReq5(respuesta, lim_longitudmin, lim_longitudmax, lim_latitudmin,lim_latitudmax ):
+
+    size = lt.size(respuesta)
+
+    print('Se encontraron ' + str(size) + ' avistamientos con una longitud entre ' + str(lim_longitudmin) + ' y ' + str(lim_longitudmax) + ' y con una latitud entre ' + str(lim_latitudmin) + ' y ' + str(lim_latitudmax) + '\n')
+    print('A conitnuación se muestran los primeros 5 y últimos 5 avistamientos en el rango: \n')
+
+    if size > 10 :
+
+        first5 = lt.subList(respuesta,1,5)
+        last5 = lt.subList(respuesta,size - 4,5)
+
+        for avis in lt.iterator(first5):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + ', Latitud: ' + str(round(float(avis['latitude']),3)) + ', Longitud: ' + str(round(float(avis['longitude']),3)) +'\n')
+        
+        for avis in lt.iterator(last5):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + ', Latitud: ' + str(round(float(avis['latitude']),3)) + ', Longitud: ' + str(round(float(avis['longitude']), 3)) +'\n')
+
+    else:
+        for avis in lt.iterator(respuesta):
+            print('Fecha y hora: ' + avis['datetime'] + ', Ciudad: ' + avis['city'] + ', País: ' + avis['country'] + ', Duración en segundos: ' + avis['duration (seconds)'] + ', Forma del objeto: ' + avis['shape'] + ', Latitud: ' + str(round(float(avis['latitude']), 3)) + ', Longitud: ' + str(round(float(avis['longitude']), 3)) +'\n')
+
 
 """
 Menu principal
@@ -169,8 +191,8 @@ while True:
     
     elif int(inputs[0]) == 4:
 
-        lim_inf = int(input('Menor duración en segundos a consultar: '))
-        lim_sup = int(input('Mayor duración en segundos a consultar: '))
+        lim_inf = float(input('Menor duración en segundos a consultar: '))
+        lim_sup = float(input('Mayor duración en segundos a consultar: '))
 
         duracion = controller.getDurationSights(analyzer,lim_inf,lim_sup)
 
@@ -196,10 +218,18 @@ while True:
 
     elif int(inputs[0]) == 7:
 
-        lim_longitud = input('límite mínimo y máximo de longitud: ')
-        lim_ltitud = input('límite mínimo yy máximo de latitud:  ')
+        lim_longitudmin = float(input('límite mínimo de longitud: '))
+        lim_longitudmax= float(input('límite máximo de longitud: '))
 
-        
+        lim_latitudmin = float(input('límite mínimo de latitud:  '))
+        lim_latitudmax = float(input('límite máximo de latitud:  '))
+
+        respuesta = controller.getSightsLocation(analyzer, lim_longitudmin, lim_longitudmax, lim_latitudmin, lim_latitudmax)
+
+        printReq5(respuesta, lim_longitudmin, lim_longitudmax, lim_latitudmin,lim_latitudmax )
+
+    elif int(inputs[0]) == 8:
+        pass
 
     else:
         sys.exit(0)

@@ -50,8 +50,8 @@ def loadData(analyzer):
                                 delimiter=",")
     for avistamiento in input_file:
         model.addAvistamiento(analyzer, avistamiento)
-    
     sortDurationIndex(analyzer)
+    sortDateIndex(analyzer)
     return analyzer
 
 
@@ -59,6 +59,11 @@ def loadData(analyzer):
 def sortDurationIndex(analyzer):
 
     return model.sortDurationIndex(analyzer)
+
+def sortDateIndex(analyzer):
+
+    return model.sortDateIndex(analyzer)
+
 
 # Funciones de consulta sobre el catálogo
 def getCitySights (analyzer, city):
@@ -76,3 +81,7 @@ def getreq3(analyzer, lim_inf, lim_sup):
 def getSightsinRange(analyzer, lim_inf, lim_sup):
 
     return model.getSightsinRange(analyzer, lim_inf, lim_sup)
+
+def getSightsLocation(analyzer, lim_longitudmin, lim_longitudmax, lim_latitudmin, lim_latitudmax):
+
+    return model.getSightsLocation(analyzer, lim_longitudmin, lim_longitudmax, lim_latitudmin, lim_latitudmax)

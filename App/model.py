@@ -31,6 +31,7 @@ from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import mergesort as ms
+#import folium
 import datetime
 assert cf
 
@@ -55,6 +56,7 @@ def newAnalyzer():
                 'Sightings_per_duration':None,
                 'Sightings_per_time': None,
                 'Sightings_per_date': None,
+                'Sightings_per_location':None,
                 }
 
     analyzer['ufos_list'] = lt.newList('ARRAY_LIST')
@@ -70,6 +72,9 @@ def newAnalyzer():
                                                 comparefunction = comparetime)
     analyzer['Sightings_per_date'] = om.newMap('RBT',
                                                 comparefunction = comparedates)
+    analyzer['Sightings_per_location'] = om.newMap('RBT',
+                                                comparefunction = comparelatitudes)
+                            
     return analyzer
 
 # Funciones para agregar informacion al catalogo
@@ -81,6 +86,7 @@ def addAvistamiento(analyzer, avistamiento):
     updateDurationIndex(analyzer['Sightings_per_duration'], avistamiento)
     updateTimeIndex(analyzer['Sightings_per_time'], avistamiento)
     updateDateIndex(analyzer['Sightings_per_date'], avistamiento)
+    updateLatitudIndex(analyzer['Sightings_per_location'], avistamiento)
 
     return analyzer
 
@@ -134,13 +140,13 @@ def addDateIndex(cityentry, avistamiento):
     return cityentry
 
 def updateDurationIndex(map, avistamiento):
-    duration = avistamiento['duration (seconds)'].split('.')
+    duration = float(avistamiento['duration (seconds)'])
 
-    entry = om.get(map, int(duration[0]))
+    entry = om.get(map, duration)
 
     if entry is None:
-        durationentry = newDurationEntrylab(int(duration[0]))
-        om.put(map, int(duration[0]), durationentry)
+        durationentry = newDurationEntrylab(duration)
+        om.put(map, duration, durationentry)
     else:
         durationentry = me.getValue(entry) 
     lt.addLast(durationentry['Sightslst'],avistamiento)
@@ -213,6 +219,38 @@ def sortDateIndex(analyzer):
         sights_list = me.getValue(date_entry)
         sortdate(sights_list['Sightslst'])
 
+def updateLatitudIndex(map, avistamiento):
+    latitud = round(float(avistamiento['latitude']), 2)
+    
+    entry = om.get(map, latitud)
+    if entry is None:
+        latitudentry = newlatitudEntry(latitud)
+        om.put(map, latitud, latitudentry)
+
+    else:
+        latitudentry = me.getValue(entry)
+
+    addLongitudIndex(latitudentry, avistamiento)
+
+    return map
+
+def addLongitudIndex(latitudentry, avistamiento):
+
+    longitud = round(float(avistamiento['longitude']), 2)
+    latitud_index = latitudentry['LongitudeTree']
+
+    entry = om.get(latitud_index, longitud)
+
+    if entry is None:
+        longitudentry = newLongitudEntry(longitud)
+        lt.addLast(longitudentry['Sightslst'],avistamiento)
+        om.put(latitud_index,longitud,longitudentry)
+    else:
+        longitudentry = me.getValue(entry)
+        lt.addLast(longitudentry['Sightslst'], avistamiento)
+
+    return latitudentry
+
 # Funciones para creacion de datos
 
 def newCityEntrylab(city, avistamiento):
@@ -263,6 +301,22 @@ def newDateEntryreq4(date):
 
     return entry
 
+def newlatitudEntry(latitud):
+
+    entry = {'Latitude': latitud, 'LongitudeTree': None}
+
+    entry['LongitudeTree'] = om.newMap('RBT',
+                                    comparefunction = comparelongitudes)
+
+    return entry
+
+def newLongitudEntry(longitud):
+
+    entry = {'Longitud': longitud, 'Sightslst': None}
+
+    entry['Sightslst'] = lt.newList('ARRAY_LIST')
+
+    return entry
 
 # Funciones de consulta
 
@@ -333,8 +387,7 @@ def getreq3(analyzer, lim_inf, lim_sup):
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def getSightsinRange(analyzer, lim_inf, lim_sup):
-    #lim_inf_split = (lim_inf).split('-')
-    #(int(lim_inf_split[0]),int(lim_inf_split[1]),int(lim_inf_split[2]))
+
     lim_inf_f = (datetime.datetime.strptime(lim_inf,'%Y-%m-%d')).date()
     lim_sup_f = (datetime.datetime.strptime(lim_sup,'%Y-%m-%d')).date()
     rangelst = lt.newList('ARRAY_LIST')
@@ -346,13 +399,33 @@ def getSightsinRange(analyzer, lim_inf, lim_sup):
     date_oldest_size = lt.size(date_oldest_value['Sightslst'])
     date_inrange = om.values(date_omap,lim_inf_f,lim_sup_f)
 
-    #habrá que organizar por hora tbn?
 
     for date in lt.iterator(date_inrange):
         for avis in lt.iterator(date['Sightslst']):
             lt.addLast(rangelst,avis)
 
     return rangelst, date_oldest, date_oldest_size
+
+def getSightsLocation(analyzer, lim_longitudmin, lim_longitudmax, lim_latitudmin, lim_latitudmax):
+
+    rangelst = lt.newList('ARRAY_LIST')
+
+    latitude_tree = analyzer['Sightings_per_location']
+
+    latitud_inrange = om.values(latitude_tree, lim_latitudmin, lim_latitudmax) 
+
+    for latitud in lt.iterator(latitud_inrange):
+
+        longitude_tree = latitud['LongitudeTree']
+
+        longitud_inrange = om.values(longitude_tree,lim_longitudmin, lim_longitudmax )
+
+        for longitud in lt.iterator(longitud_inrange):
+            for avis in lt.iterator(longitud['Sightslst']):
+                lt.addLast(rangelst,avis)
+
+
+    return rangelst
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def compareCityLab(city1, city2):
@@ -379,9 +452,9 @@ def compareCity(city1, entry):
         return -1
 
 def compareduration(duration1,duration2):
-    if (duration1 == duration2):
+    if (float(duration1) == float(duration2)):
         return 0
-    elif (duration1 > duration2):
+    elif (float(duration1) > float(duration2)):
         return 1
     else:
         return -1
@@ -449,6 +522,23 @@ def omapcmpDate (date1,date2):
 def cmpdur(avis1, avis2):
 
     return (avis1['city'] +'-'+ avis1['country']) < (avis2['city'] +'-'+ avis2['country'])
+
+def comparelongitudes(long1, long2):
+    if (float(long1) == float(long2)):
+        return 0
+    elif (float(long1) > float(long2)):
+        return 1
+    else:
+        return -1
+
+def comparelatitudes(lat1, lat2):
+
+    if (float(lat1) == float(lat2)):
+        return 0
+    elif (float(lat1) > float(lat2)):
+        return 1
+    else:
+        return -1
 
 # Funciones de ordenamiento
 

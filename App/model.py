@@ -553,3 +553,4 @@ def sortdate(list):
 def sortreq3(list):
     
     ms.sort(list, cmpfecha)
+    ms.sort(list,cmphour)

@@ -48,6 +48,8 @@ def printMenu():
     print('5- Contar avistamientos por Hora/Minutos del día (Req-3)')
     print('6- Contar los avistamientos en un rango de fechas (Req-4)')
     print('7- Contar los avistamientos de una Zona Geográfica (Req-5)')
+    print('8- Bono')
+    print('9- Exit')
 
 catalog = None
 
@@ -258,6 +260,9 @@ while True:
 
     elif int(inputs[0]) == 8:
         pass
+
+    elif int(inputs[0]) == 9:
+        sys.exit(0)
 
     else:
         sys.exit(0)

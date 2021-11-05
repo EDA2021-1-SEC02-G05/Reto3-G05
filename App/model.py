@@ -432,7 +432,13 @@ def getMapLocation(respuesta, lim_longitudmin,lim_longitudmax, lim_latitudmin,li
 
     map = map = folium.Map(location=[latitud_promedio, longitud_promedio], zoom_start=4)
 
+    folium.Rectangle([(lim_latitudmin,lim_longitudmax),(lim_latitudmax,lim_longitudmin)],
+                        fill = True,
+                        fill_color = 'pink'
+                        ).add_to(map)
+
     city_lst = []
+    country_lst = []
     dt_lst = []
     dur_lst = []
     shp_lst = []
@@ -446,11 +452,12 @@ def getMapLocation(respuesta, lim_longitudmin,lim_longitudmax, lim_latitudmin,li
         shp_lst.append(avis['shape'])
         lat_lst.append(float(avis['latitude']))
         lon_lst.append(float(avis['longitude']))
+        country_lst.append(avis['country'])
 
-    for dt, city, dur, shp, lat, lon in zip(dt_lst, city_lst, dur_lst, shp_lst,lat_lst,lon_lst):
+    for dt, city, country , dur, shp, lat, lon in zip(dt_lst, city_lst,country_lst, dur_lst, shp_lst,lat_lst,lon_lst):
 
         loc = [lat,lon]
-        data = dt + city + dur + shp
+        data = 'Fecha y hora:' + dt + ' , Ciudad:' + city +' , País: '+ country+ ' , Duración en segundos:' +dur + ' , Forma del objeto:' + shp
 
         folium.Marker(
             location = loc,
@@ -459,7 +466,6 @@ def getMapLocation(respuesta, lim_longitudmin,lim_longitudmax, lim_latitudmin,li
 
     map.save(outfile='mapa.html')
 
-    display(map)
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def compareCityLab(city1, city2):

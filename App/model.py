@@ -31,7 +31,8 @@ from DISClib.ADT import map as mp
 from DISClib.ADT import orderedmap as om
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import mergesort as ms
-#import folium
+import folium
+from IPython.display import display
 import datetime
 assert cf
 
@@ -362,9 +363,6 @@ def getreq3(analyzer, lim_inf, lim_sup):
     hour1 = date1.time()
     hour2= date2.time()
 
-    #print(hour1)
-    #print(hour2)
-
     rangelst = lt.newList('ARRAY_LIST', cmpfunction = cmphour)
 
     time_omap = analyzer['Sightings_per_time']
@@ -376,7 +374,6 @@ def getreq3(analyzer, lim_inf, lim_sup):
     
     time_inrange = om.values(time_omap,hour1,hour2)
 
-    #habrá que organizar por hora tbn?
 
     for time in lt.iterator(time_inrange):
         for avis in lt.iterator(time['Sightslst']):
@@ -426,6 +423,43 @@ def getSightsLocation(analyzer, lim_longitudmin, lim_longitudmax, lim_latitudmin
 
 
     return rangelst
+
+def getMapLocation(respuesta, lim_longitudmin,lim_longitudmax, lim_latitudmin,lim_latitudmax):
+
+    longitud_promedio = (float(lim_longitudmax) + float(lim_longitudmin))/2
+
+    latitud_promedio = (float(lim_latitudmax) + float(lim_latitudmin))/2
+
+    map = map = folium.Map(location=[latitud_promedio, longitud_promedio], zoom_start=4)
+
+    city_lst = []
+    dt_lst = []
+    dur_lst = []
+    shp_lst = []
+    lat_lst = []
+    lon_lst = []
+
+    for avis in lt.iterator(respuesta):
+        city_lst.append(avis['city'])
+        dt_lst.append(avis['datetime'])
+        dur_lst.append(avis['duration (seconds)'])
+        shp_lst.append(avis['shape'])
+        lat_lst.append(float(avis['latitude']))
+        lon_lst.append(float(avis['longitude']))
+
+    for dt, city, dur, shp, lat, lon in zip(dt_lst, city_lst, dur_lst, shp_lst,lat_lst,lon_lst):
+
+        loc = [lat,lon]
+        data = dt + city + dur + shp
+
+        folium.Marker(
+            location = loc,
+            popup = folium.Popup(data,max_width=450)
+            ).add_to(map)
+
+    map.save(outfile='mapa.html')
+
+    display(map)
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def compareCityLab(city1, city2):

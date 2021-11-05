@@ -259,10 +259,10 @@ while True:
         printReq5(respuesta, lim_longitudmin, lim_longitudmax, lim_latitudmin,lim_latitudmax )
 
     elif int(inputs[0]) == 8:
-        pass
 
-    elif int(inputs[0]) == 9:
-        sys.exit(0)
+        controller.getMapLocation(respuesta, lim_longitudmin,lim_longitudmax, lim_latitudmin,lim_latitudmax)
+
+        pass
 
     else:
         sys.exit(0)

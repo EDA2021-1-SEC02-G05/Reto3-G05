@@ -259,7 +259,6 @@ while True:
 
     elif int(inputs[0]) == 8:
 
-        #REVISAR AQUI QUE HAY Q HACER EN EL VIEW
 
         controller.getMapLocation(respuesta, lim_longitudmin,lim_longitudmax, lim_latitudmin,lim_latitudmax)
 

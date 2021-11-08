@@ -257,7 +257,6 @@ while True:
 
         printReq5(respuesta, lim_longitudmin, lim_longitudmax, lim_latitudmin,lim_latitudmax )
 
-        print(respuesta)
 
     elif int(inputs[0]) == 8:
 

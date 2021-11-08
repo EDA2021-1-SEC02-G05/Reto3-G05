@@ -478,7 +478,7 @@ def getMapLocation(respuesta, lim_longitudmin,lim_longitudmax, lim_latitudmin,li
             icon = folium.Icon(color = 'green', icon_color= 'yellow', icon = 'eye-open', prefix = 'glyphicon')
             ).add_to(map)
 
-    map.save(outfile='lolazo.html')
+    map.save(outfile='mapa.html')
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

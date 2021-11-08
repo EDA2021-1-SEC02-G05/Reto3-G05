@@ -192,6 +192,18 @@ def sortTimeIndex(analyzer):
         time_entry = om.get(time_omap, key)
         sights_list = me.getValue(time_entry)
         sortdate(sights_list['Sightslst'])
+        
+
+def sortTimeIndex2(analyzer):
+    time_omap = analyzer['Sightings_per_time']
+
+    time_keys = om.keySet(time_omap)
+
+    for key in lt.iterator(time_keys):
+        time_entry = om.get(time_omap, key)
+        sights_list = me.getValue(time_entry)
+        
+        sortreq3(sights_list['Sightslst'])
 
 ####
 def updateDateIndex(map, avistamiento):
@@ -379,7 +391,7 @@ def getreq3(analyzer, lim_inf, lim_sup):
         for avis in lt.iterator(time['Sightslst']):
             lt.addLast(rangelst,avis)
 
-    sortreq3(rangelst)
+
     return rangelst, time_oldest, time_oldest_size
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -593,6 +605,6 @@ def sortdate(list):
     ms.sort(list, cmphour)
 
 def sortreq3(list):
-    
+
     ms.sort(list, cmpfecha)
-    ms.sort(list,cmphour)
+    

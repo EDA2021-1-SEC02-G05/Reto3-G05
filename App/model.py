@@ -434,7 +434,8 @@ def getMapLocation(respuesta, lim_longitudmin,lim_longitudmax, lim_latitudmin,li
 
     folium.Rectangle([(lim_latitudmin,lim_longitudmax),(lim_latitudmax,lim_longitudmin)],
                         fill = True,
-                        fill_color = 'pink'
+                        fill_color = 'pink',
+                        color = 'pink'
                         ).add_to(map)
 
     city_lst = []
@@ -457,11 +458,12 @@ def getMapLocation(respuesta, lim_longitudmin,lim_longitudmax, lim_latitudmin,li
     for dt, city, country , dur, shp, lat, lon in zip(dt_lst, city_lst,country_lst, dur_lst, shp_lst,lat_lst,lon_lst):
 
         loc = [lat,lon]
-        data = 'Fecha y hora:' + dt + ' , Ciudad:' + city +' , País: '+ country+ ' , Duración en segundos:' +dur + ' , Forma del objeto:' + shp
+        data = 'Fecha y hora: ' + dt + ' , Ciudad: ' + city +' , País: '+ country+ ' , Duración en segundos: ' +dur + ' , Forma del objeto: ' + shp
 
         folium.Marker(
             location = loc,
-            popup = folium.Popup(data,max_width=450)
+            popup = folium.Popup(data,max_width=450),
+            icon = folium.Icon(color = 'green', icon_color= 'yellow', icon = 'eye-open', prefix = 'glyphicon')
             ).add_to(map)
 
     map.save(outfile='mapa.html')

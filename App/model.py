@@ -442,7 +442,7 @@ def getMapLocation(respuesta, lim_longitudmin,lim_longitudmax, lim_latitudmin,li
 
     latitud_promedio = (float(lim_latitudmax) + float(lim_latitudmin))/2
 
-    map = map = folium.Map(location=[latitud_promedio, longitud_promedio], zoom_start=4)
+    map = folium.Map(location=[latitud_promedio, longitud_promedio], zoom_start=4)
 
     folium.Rectangle([(lim_latitudmin,lim_longitudmax),(lim_latitudmax,lim_longitudmin)],
                         fill = True,
@@ -478,7 +478,7 @@ def getMapLocation(respuesta, lim_longitudmin,lim_longitudmax, lim_latitudmin,li
             icon = folium.Icon(color = 'green', icon_color= 'yellow', icon = 'eye-open', prefix = 'glyphicon')
             ).add_to(map)
 
-    map.save(outfile='mapa.html')
+    map.save(outfile='lolazo.html')
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

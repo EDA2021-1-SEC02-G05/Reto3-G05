@@ -257,8 +257,9 @@ while True:
 
         printReq5(respuesta, lim_longitudmin, lim_longitudmax, lim_latitudmin,lim_latitudmax )
 
-    elif int(inputs[0]) == 8:
+        print(respuesta)
 
+    elif int(inputs[0]) == 8:
 
         controller.getMapLocation(respuesta, lim_longitudmin,lim_longitudmax, lim_latitudmin,lim_latitudmax)
 

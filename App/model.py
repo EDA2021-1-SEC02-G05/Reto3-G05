@@ -442,7 +442,7 @@ def getMapLocation(respuesta, lim_longitudmin,lim_longitudmax, lim_latitudmin,li
 
     latitud_promedio = (float(lim_latitudmax) + float(lim_latitudmin))/2
 
-    map = folium.Map(location=[latitud_promedio, longitud_promedio], zoom_start=4)
+    map = folium.Map(location=[latitud_promedio, longitud_promedio], tiles = 'Stamen Terrain', zoom_start=4)
 
     folium.Rectangle([(lim_latitudmin,lim_longitudmax),(lim_latitudmax,lim_longitudmin)],
                         fill = True,
